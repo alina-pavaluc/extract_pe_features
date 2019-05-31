@@ -4,6 +4,7 @@ import pickle
 import pandas as pd
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 
 from extract_features import extract_features_from_file, extract_features_from_folder
 
@@ -54,6 +55,21 @@ def train_using_decision_tree_classifier():
     pickle.dump(clf, open(filename, 'wb'))
 
 
+def train_using_mlp():
+    features = []
+    labels = []
+    with open('C:\\Users\\Alina\\PycharmProjects\\licenta2\\all_features.csv') as feature_file:
+        features_files = csv.reader(feature_file, delimiter=',')
+        for row in features_files:
+            features.append(list(map(float, row[1:-1])))
+            labels.append(row[-1])
+    y = pd.factorize(labels)[0]
+    clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 50), random_state=1, max_iter= 200)
+    clf.fit(features, y)
+    filename = 'C:\\Users\\Alina\\PycharmProjects\\licenta2\\MLP_model.sav'
+    pickle.dump(clf, open(filename, 'wb'))
+
+
 def train_using_random_forest_classifier():
     features = []
     labels = []
@@ -76,12 +92,13 @@ def train_using_random_forest_classifier():
 
 
 def use_classifier():
-    filename = 'C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model.sav'
+    filename = 'C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav'
     loaded_model = pickle.load(open(filename, 'rb'))
-    result = loaded_model.predict([[0, 0.0, 29948, 0, 928, 2618, 4, 0, 0, 28672, 1048576]])
-    print(result)
-
+    result = loaded_model.predict([[0, 0.0, 360448, 0, 292, 2176, 5, 0, 0, 301568, 1048576]])
+    prob = loaded_model.predict_proba([[0, 0.0, 360448, 0, 292, 2176, 5, 0, 0, 301568, 1048576]])
+    print(result, prob)
 
 
 if __name__ == "__main__":
-    train_using_random_forest_classifier()
+    # train_using_mlp()
+    use_classifier()

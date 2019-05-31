@@ -73,7 +73,7 @@ def get_debug_size(pe):
 
 
 def get_image_version(pe):
-    return "{}.{}".format(pe.OPTIONAL_HEADER.MajorImageVersion, pe.OPTIONAL_HEADER.MinorImageVersion)
+    return float("{}.{}".format(pe.OPTIONAL_HEADER.MajorImageVersion, pe.OPTIONAL_HEADER.MinorImageVersion))
 
 
 def get_iat_rva(pe):

@@ -74,8 +74,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
     classifier = Classifier('C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav')
-
+    ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
