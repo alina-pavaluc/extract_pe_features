@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
 
 from extract_features import extract_features_from_file, extract_features_from_folder
 
@@ -77,13 +79,21 @@ def train_using_random_forest_classifier():
     with open('C:\\Users\\Alina\\PycharmProjects\\licenta2\\all_features.csv') as feature_file:
         features_files = csv.reader(feature_file, delimiter=',')
         for row in features_files:
-            features.append(row[1:-1])
+            features.append(list(map(float, row[1:-1])))
             labels.append(row[-1])
 
     y = pd.factorize(labels)[0]
-    clf = RandomForestClassifier(n_jobs=2, random_state=0)
+
+    # X_train, X_test, y_train, y_test = train_test_split(features, y, test_size=0.3)
+
+    clf = RandomForestClassifier(n_jobs=2, random_state=0, n_estimators=100)
 
     clf.fit(features, y)
+
+    # clf.fit(X_train, y_train)
+    # y_pred = clf.predict(X_test)
+    # print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
 
     # print(clf.predict([[0, 0.0, 278572, 0, 61484, 65536, 3, 46976398, 0, 65536, 1048576]]))
     # print(clf.predict_proba([[0, 0.0, 278572, 0, 61484, 65536, 3, 46976398, 0, 65536, 1048576]]))
@@ -100,5 +110,5 @@ def use_classifier():
 
 
 if __name__ == "__main__":
-    # train_using_mlp()
+    train_using_random_forest_classifier()
     use_classifier()
