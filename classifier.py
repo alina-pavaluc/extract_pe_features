@@ -76,10 +76,12 @@ def train_using_random_forest_classifier():
     features = []
     labels = []
 
+    feature_names = ['DebugSize', 'ImageVersion','ResourceSize', 'VirtualSize2','CheckSum', 'DLLCharacteristics',
+                     'SizeOfInitializedData', 'SizeOfStackReserve']
     with open('C:\\Users\\Alina\\PycharmProjects\\licenta2\\all_features.csv') as feature_file:
         features_files = csv.reader(feature_file, delimiter=',')
         for row in features_files:
-            features.append(list(map(float, row[1:-1])))
+            features.append(list(map(float, [row[1], row[2], row[5], row[6], row[8], row[9], row[10], row[11]])))
             labels.append(row[-1])
 
     y = pd.factorize(labels)[0]
@@ -89,6 +91,8 @@ def train_using_random_forest_classifier():
     clf = RandomForestClassifier(n_jobs=2, random_state=0, n_estimators=100)
 
     clf.fit(features, y)
+
+    # print(pd.Series(clf.feature_importances_, index=feature_names))
 
     # clf.fit(X_train, y_train)
     # y_pred = clf.predict(X_test)
@@ -111,4 +115,4 @@ def use_classifier():
 
 if __name__ == "__main__":
     train_using_random_forest_classifier()
-    use_classifier()
+    # use_classifier()
