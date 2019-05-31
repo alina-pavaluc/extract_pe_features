@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtCore
 
-from classifier import classify_file, scan_folder
+from classifier import Classifier
 
 
 class Ui_MainWindow(object):
@@ -51,8 +51,8 @@ class Ui_MainWindow(object):
             self.print_classification(fileName)
 
     def print_classification(self, filename):
-        label = classify_file(filename)
-        self.listWidget.addItem(filename + " - " + label[0] + "prob: " + str(label[1]))
+        label = classifier.classify_file(filename)
+        self.listWidget.addItem(filename + " - " + label[0] + " probability: " + str(label[1]))
 
     def setDirectory(self):
         directory = QtWidgets.QFileDialog.getExistingDirectory(None, "Select directory", "")
@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
         self.listWidget.addItem(dir)
 
     def print_classification_folder(self, directory):
-        classified_files = scan_folder(directory)
+        classified_files = classifier.scan_folder(directory)
         for item in classified_files:
             self.listWidget.addItem(item[0] + " - " + item[1][0] + " probability: " + str(item[1][1]))
 
@@ -75,5 +75,7 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    classifier = Classifier('C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav')
+
     MainWindow.show()
     sys.exit(app.exec_())

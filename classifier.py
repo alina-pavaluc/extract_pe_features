@@ -8,12 +8,31 @@ from sklearn.ensemble import RandomForestClassifier
 from extract_features import extract_features_from_file, extract_features_from_folder
 
 
-def label_file(extracted_features):
-    filename = 'C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav'
-    loaded_model = pickle.load(open(filename, 'rb'))
-    target_names = ['clean', 'malware']
-    predicted = loaded_model.predict([extracted_features])[0]
-    return target_names[predicted], loaded_model.predict_proba([extracted_features])[0][predicted]
+class Classifier:
+    def __init__(self, filename):
+        self.loaded_model = pickle.load(open(filename, 'rb'))
+        self.target_names = ['clean', 'malware']
+
+    def label_file(self, extracted_features):
+        predicted = self.loaded_model.predict([extracted_features])[0]
+        return self.target_names[predicted], self.loaded_model.predict_proba([extracted_features])[0][predicted]
+
+    def classify_file(self, filename):
+        extracted_features = extract_features_from_file(filename)
+        if extracted_features != '':
+            return self.label_file(extracted_features)
+        else:
+            return 'this is not an application, so it\'s not a threat', '1.0'
+
+    def scan_folder(self, folder_name):
+        out = []
+        try:
+            features = extract_features_from_folder(folder_name)
+            for file_features in features:
+                out.append([file_features[0], self.label_file(file_features[1])])
+        except Exception as e:
+            print(e)
+        return out
 
 
 def train_using_decision_tree_classifier():
@@ -62,24 +81,6 @@ def use_classifier():
     result = loaded_model.predict([[0, 0.0, 29948, 0, 928, 2618, 4, 0, 0, 28672, 1048576]])
     print(result)
 
-
-def classify_file(file_name):
-    extracted_features = extract_features_from_file(file_name)
-    if extracted_features != '':
-        return label_file(extracted_features)
-    else:
-        return 'no risk', '1.'
-
-
-def scan_folder(folder_name):
-    try:
-        features = extract_features_from_folder(folder_name)
-        out = []
-        for file_features in features:
-            out.append([file_features[0], label_file(file_features[1])])
-    except Exception as e:
-        print(e)
-    return out
 
 
 if __name__ == "__main__":
