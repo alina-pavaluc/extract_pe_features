@@ -98,7 +98,7 @@ def get_number_of_sections(pe):
 
 
 # pe = pefile.PE("E://Sublime Text 3\\msvcr100.dll")
-pe = pefile.PE("C://Users//Alina//Downloads\\Sublime Text Build 3176 x64 Setup.exe")
+# pe = pefile.PE("C://Users//Alina//Downloads\\Sublime Text Build 3176 x64 Setup.exe")
 # print(pe.dump_info())
 # print(get_iat_rva(pe))
 # print(pe.OPTIONAL_HEADER.SectionAlignment)
