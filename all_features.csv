@@ -1,3 +1,4 @@
+FilePath,DebugSize,ImageVersion,IatRVA,ExportSize,ResourceSize,VirtualSize2,NumberOfSections,CheckSum,DLLCharacteristics,SizeOfInitializedData,SizeOfStackReserve,Label
 accesschk.exe,0,0.0,160516,0,373392,54154,4,702009,33024,579584,1048576,clean
 AccessEnum.exe,28,0.0,38408,0,11912,10638,4,224466,0,139264,1048576,clean
 accscope.exe,28,0.0,130360,0,2040,2040,3,167111,34144,2560,1048576,clean
