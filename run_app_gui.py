@@ -6,6 +6,11 @@ from trainpage import *
 
 
 class Ui_MainWindow(object):
+
+    def __init__(self, window):
+        self.MainWindow = window
+        self.setupUi(self.MainWindow)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(769, 449)
@@ -82,17 +87,18 @@ class Ui_MainWindow(object):
 
     def goToTrainWindow(self):
         self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_TrainWindow()
+        self.ui = Ui_TrainWindow(self.window)
         self.ui.setup(self.window)
         self.window.show()
-        MainWindow.hide()
+        self.MainWindow.hide()
 
     def print_classification(self, filename):
+        classifier = Classifier('C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav')
         label = classifier.classify_file(filename)
         self.listWidget.addItem(filename + " - " + label[0] + " probability: " + str(label[1]))
 
     def setDirectory(self):
-        directory = QtWidgets.QFileDialog.getExistingDirectory(None, "Select directory", ".")
+        directory = QtWidgets.QFileDialog.getExistingDirectory(None, "Select directory", "")
         if directory:
             self.print_classification_folder(directory)
 
@@ -100,11 +106,12 @@ class Ui_MainWindow(object):
         self.listWidget.addItem(dir)
 
     def print_classification_folder(self, directory):
+        classifier = Classifier('C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav')
+
         classified_files = list(classifier.scan_folder(directory))
         malware_count = sum(1 for i in classified_files if i[1][0] == 'malware')
         file_count = len(classified_files)
 
-        print(malware_count, '/', file_count)
         self.label.setText(str(malware_count) + "/" + str(file_count) + " malware")
 
         self.listWidget.clear()
@@ -117,8 +124,8 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    classifier = Classifier('C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav')
+    ui = Ui_MainWindow(MainWindow)
+    # classifier = Classifier('C:\\Users\\Alina\\PycharmProjects\\licenta2\\finalized_model_random_forest.sav')
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
