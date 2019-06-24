@@ -1,8 +1,8 @@
 import PyQt5
-
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtCore, QtWidgets
 
 from classifier import Classifier
+from trainpage import *
 
 
 class Ui_MainWindow(object):
@@ -64,6 +64,7 @@ class Ui_MainWindow(object):
 
         self.selectFileButton.clicked.connect(self.setFile)
         self.scanButton.clicked.connect(self.setDirectory)
+        self.trainModelButton.clicked.connect(self.goToTrainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -78,6 +79,13 @@ class Ui_MainWindow(object):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Select file", ".")
         if fileName:
             self.print_classification(fileName)
+
+    def goToTrainWindow(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_TrainWindow()
+        self.ui.setup(self.window)
+        self.window.show()
+        MainWindow.hide()
 
     def print_classification(self, filename):
         label = classifier.classify_file(filename)
