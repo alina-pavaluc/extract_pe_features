@@ -1,12 +1,11 @@
 import csv
 import pickle
 
+import numpy as np
 import pandas as pd
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import train_test_split
-from sklearn import metrics
 
 from extract_features import extract_features_from_file, extract_features_from_folder
 
@@ -17,25 +16,21 @@ class Classifier:
         self.target_names = ['clean', 'malware']
 
     def label_file(self, extracted_features):
-        predicted = self.loaded_model.predict([extracted_features])[0]
-        return self.target_names[predicted], self.loaded_model.predict_proba([extracted_features])[0][predicted]
+        predicted = self.loaded_model.predict_proba(extracted_features)
+        return list(map(lambda p: (self.target_names[p.argmax()], p.max()), predicted))
 
     def classify_file(self, filename):
         extracted_features = extract_features_from_file(filename)
-        if extracted_features != '':
-            return self.label_file(extracted_features)
+        if extracted_features is not None:
+            return filename, self.label_file([extracted_features])[0]
         else:
+            # TODO
             return 'this is not an application, so it\'s not a threat', '1.0'
 
     def scan_folder(self, folder_name):
-        out = []
-        try:
-            features = extract_features_from_folder(folder_name)
-            for file_features in features:
-                out.append([file_features[0], self.label_file(file_features[1])])
-        except Exception as e:
-            print(e)
-        return out
+        file_names, features = extract_features_from_folder(folder_name)
+        classification = self.label_file(features)
+        return zip(file_names, classification)
 
 
 def train_using_decision_tree_classifier():
@@ -66,7 +61,7 @@ def train_using_mlp():
             features.append(list(map(float, row[1:-1])))
             labels.append(row[-1])
     y = pd.factorize(labels)[0]
-    clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 50), random_state=1, max_iter= 200)
+    clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 50), random_state=1, max_iter=200)
     clf.fit(features, y)
     filename = 'C:\\Users\\Alina\\PycharmProjects\\licenta2\\MLP_model.sav'
     pickle.dump(clf, open(filename, 'wb'))
@@ -76,7 +71,7 @@ def train_using_random_forest_classifier():
     features = []
     labels = []
 
-    feature_names = ['DebugSize', 'ImageVersion','ResourceSize', 'VirtualSize2','CheckSum', 'DLLCharacteristics',
+    feature_names = ['DebugSize', 'ImageVersion', 'ResourceSize', 'VirtualSize2', 'CheckSum', 'DLLCharacteristics',
                      'SizeOfInitializedData', 'SizeOfStackReserve']
     with open('C:\\Users\\Alina\\PycharmProjects\\licenta2\\all_features.csv') as feature_file:
         features_files = csv.reader(feature_file, delimiter=',')
@@ -97,7 +92,6 @@ def train_using_random_forest_classifier():
     # clf.fit(X_train, y_train)
     # y_pred = clf.predict(X_test)
     # print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
-
 
     # print(clf.predict([[0, 0.0, 278572, 0, 61484, 65536, 3, 46976398, 0, 65536, 1048576]]))
     # print(clf.predict_proba([[0, 0.0, 278572, 0, 61484, 65536, 3, 46976398, 0, 65536, 1048576]]))

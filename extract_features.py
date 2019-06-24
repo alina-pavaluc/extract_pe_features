@@ -19,26 +19,20 @@ def extract_features_from_file(file_name):
                     get_check_sum(pe), get_dll_characteristics(pe), get_size_of_initialized_data(pe),
                     get_size_of_stack_reserve(pe)]
         else:
-            return ''
+            return None
     except Exception as e:
         print(e)
 
 
 def extract_features_from_folder(folder_name):
+    file_names = []
     features = []
     for path, subdirs, files in os.walk(folder_name):
         for name in files:
             file_name = os.path.join(path, name)
-            try:
-                file_type = magic.from_file(file_name, mime=True)
-                if file_type == "application/x-dosexec":
-                    pe = pefile.PE(file_name, fast_load=True)
-                    features.append(
-                        [file_name,
-                         [get_debug_size(pe), get_image_version(pe), get_resource_size(pe), get_virtual_size_2(pe),
-                          get_check_sum(pe), get_dll_characteristics(pe), get_size_of_initialized_data(pe),
-                          get_size_of_stack_reserve(pe)]])
-            except Exception as e:
-                print(e)
+            extracted_features = extract_features_from_file(file_name)
+            if extracted_features is not None:
+                file_names.append(file_name)
+                features.append(extracted_features)
 
-    return features
+    return file_names, features
